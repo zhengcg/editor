@@ -63,13 +63,18 @@ const router=new Router({
             component: resolve => require(['../components/check.vue'], resolve)
         },{
             path:'/home',
-            redirect:'/home/personalInfo'
+            redirect:'/home/myAssets'
         }]
     },
      { 
         path: '/register',
         name: 'register',
         component: resolve => require(['../components/Register.vue'], resolve)
+    },
+     { 
+        path: '/forPa',
+        name: 'forPa',
+        component: resolve => require(['../components/forPa.vue'], resolve)
     },
     { 
         path: '/login',
@@ -88,6 +93,7 @@ if (window.localStorage.getItem('token')) {
     store.commit("login", window.localStorage.getItem('token'))
 }
 var self=this;
+
 router.beforeEach((to, from, next) => {
     if (to.matched.some(r => r.meta.requireAuth)) {
         if (store.state.token) {

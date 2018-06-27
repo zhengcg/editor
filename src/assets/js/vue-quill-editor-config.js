@@ -1,9 +1,9 @@
 // 图片上传参数配置
 const uploadConfig = {
-  action:  '/ipfs/upload',  // 必填参数 图片上传地址
+  action:  '/pro/fileup',  // 必填参数 图片上传地址
   methods: 'POST',  // 必填参数 图片上传方式
   token: sessionStorage.token,  // 可选参数 如果需要token验证，假设你的token有存放在sessionStorage
-  name: 'image',  // 必填参数 文件的参数名
+  name: 'File',  // 必填参数 文件的参数名
   size: 1024,  // 可选参数   图片大小，单位为Kb, 1M = 1024Kb
   accept: 'image/png, image/gif, image/jpeg, image/bmp, image/x-icon'  // 可选 可上传的图片格式
 }
@@ -23,7 +23,7 @@ const toolOptions = [
   [{'font': []}],
   [{'align': []}],
   ['clean'],
-  ['link', 'image']
+  ['image']
   // ['link', 'image', 'video']
 ]
 
@@ -65,7 +65,8 @@ const handlers = {
           if (xhr.status === 200) {
             var res = JSON.parse(xhr.responseText)
             let length = self.quill.getSelection(true).index;
-            self.quill.insertEmbed(length, 'image', res.url)
+            console.log(res.result)
+            self.quill.insertEmbed(length, 'image', res.result[0])
             self.quill.setSelection(length + 1)
           }
           fileInput.value = ''

@@ -1,34 +1,39 @@
 <template>
- <div>
+ <div id="myAssets">
   <div class="articelNum">
-    我的资产（单位：个/IPE）
+    我的收益（单位：个/IPE）
     <span>IPE资产暂不支持提币，敬请期待</span>
   </div>
   <div class="container">
-    <el-row :gutter="20">
-      <el-col :span="6"><div class="grid-content bg-purple">
-        总收益
-        <div>345</div>
+    <el-row type="flex" justify="space-between">
+      <el-col :span="4"><div class="grid-content bg-purple">
+        总资产
+        <div>{{info.ipeBalance}}</div>
       </div></el-col>
-      <el-col :span="6"><div class="grid-content bg-purple">
-        今日收益
-        <div>30</div>
+      <el-col :span="4"><div class="grid-content bg-purple">
+        昨日收益
+        <div>{{info.day}}</div>
       </div></el-col>
-      <el-col :span="6"><div class="grid-content bg-purple">
+      <el-col :span="4"><div class="grid-content bg-purple">
+        累计收益
+        <div>{{info.ipeTotal}}</div>
+      </div></el-col>
+      <el-col :span="4"><div class="grid-content bg-purple">
         最近7日收益
-        <div>60</div>
+        <div>{{info.week}}</div>
       </div></el-col>
-      <el-col :span="6"><div class="grid-content bg-purple">
+       <el-col :span="4"><div class="grid-content bg-purple">
         最近30日收益
-        <div>100</div>
+        <div>{{info.month}}</div>
       </div></el-col>
     </el-row>
-    <div class="chart">
-      <div>
-        <schart canvasId="line"  :data="data1" width="500" height="400"  type="line" :options="options1"></schart>
+    <div style="padding: 20px;background:#ecf5ff">
+      <div class="charts">
+        <h3 style="text-align: center">最近30日收益</h3>
+        <div id="myChart" :style="{height:'400px'}"></div>   
       </div>
-      
     </div>
+    
   </div>
 
  </div>
@@ -36,72 +41,97 @@
  
 <script>
 import api from '../api/api';
-import Schart from 'vue-schart';
+
+var echarts=require('echarts');
+require('echarts/lib/chart/line');
+require('echarts/lib/component/tooltip');
+require('echarts/lib/component/title')
  export default {
   data() {
    return {
-    data1:[
-        {name:'01',value:5},
-        {name:'02',value:14},
-        {name:'03',value:5},
-        {name:'04',value:8},
-        {name:'05',value:7},
-        {name:'06',value:15},
-        {name:'07',value:23},
-        {name:'08',value:9},
-        {name:'09',value:23},
-        {name:'10',value:14},
-        {name:'11',value:11},
-        {name:'12',value:7},
-        {name:'13',value:20},
-        {name:'14',value:16},
-        {name:'15',value:12},
-        {name:'16',value:14},
-        {name:'17',value:5},
-        {name:'18',value:18},
-        {name:'19',value:13},
-        {name:'20',value:12},
-        {name:'21',value:6},
-        {name:'22',value:14},
-        {name:'23',value:12},
-        {name:'24',value:14},
-        {name:'25',value:11},
-        {name:'26',value:12},
-        {name:'27',value:17},
-        {name:'28',value:13},
-        {name:'29',value:14},
-        {name:'30',value:14}
-    ],
-    options1: {
-        title: '最近30日收益折线图',
-        bgColor: '#ecf5ff',
-        titleColor: '#333',
-        fillColor: '#409EFF',
-        axisColor: '#999',
-        contentColor: '#999',
-        autoWidth: true,
-        showValue: true,  
-        yEqual: 5, 
-    },
+    info:{}
     
    }
   },
-  components:{
-      Schart
-    },
   computed: {
 
    
   },
   created(){
     
+    
 
   },
   mounted() {
    //初始化
+   this.getInfo()
      
   },
   methods: {
+    getInfo:function(id){
+      var self=this;
+      const loading=self.$loading({
+          lock: true,
+          text: '请求中……',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
+        self.axios({
+            method: 'get',
+            url:api.asset      
+          }).then(function (res) {
+              if(res.data.code==200){
+               loading.close();
+               self.info=res.data.result; 
+               var list=res.data.result.list;
+               var date=res.data.result.dateList;
+               var value=res.data.result.ipeList;
+              
+                var option={
+                        
+                      xAxis: {
+                          type: 'category',
+                          data: date,
+                          name:'日期',
+                          axisLabel: {
+                                rotate: 50,
+                            }
+                      },
+                      tooltip: {
+                          trigger: 'axis'
+                      },
+                      yAxis: {
+                          type: 'value',
+                          name:'IPE值'
+                      },
+                      
+                      series: [{
+                          data: value,
+                          type: 'line'
+                      }]
+                  };
+                  let chartBox = document.getElementsByClassName('charts')[0]
+                  let myChart = document.getElementById('myChart')
+
+                  // 用于使chart自适应高度和宽度,通过窗体高宽计算容器高宽
+                  function resizeCharts () {
+                    myChart.style.width = chartBox.style.width + 'px'
+                    myChart.style.height = chartBox.style.height + 'px'
+                  }
+                  // 设置容器高宽
+                  resizeCharts()
+                  let myCharts=echarts.init(myChart);
+                  myCharts.setOption(option)
+
+                                            
+              }else{
+                loading.close();  
+              }              
+            }).catch(function (error) {
+                loading.close();         　　
+            });
+
+    }
  
    
   }
@@ -109,6 +139,7 @@ import Schart from 'vue-schart';
  }
 </script>
 <style lang="scss">
+#myAssets{
 .articelNum{
   height:40px;
   line-height:40px;
@@ -165,5 +196,6 @@ import Schart from 'vue-schart';
     #line{
       width:100%;
       height:350px;
+    }
     }
 </style>

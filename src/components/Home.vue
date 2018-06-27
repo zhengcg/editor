@@ -2,28 +2,31 @@
 <template>
   <div id="home">
         <div id="header">
-          <div class="logoDiv">LOGO</div>
-          <div class="titHead">IPTrade 区块链管理后台</div>
+          <div class="logoDiv"><img src="../assets/icon/logo.png" alt=""></div>
+          <div class="titHead">IPXE 区块链管理后台</div>
           <div style="float: right;padding-right: 30px;">
             <el-dropdown  @command="handleCommand">
-              <i class="el-icon-setting" style="margin-right: 15px"></i>
+              <i class="el-icon-setting" style="margin-right: 15px;color:#fff"></i>
+              
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="a" >认证中心</el-dropdown-item>
-                <el-dropdown-item command="b">退出登录</el-dropdown-item>
+                <el-dropdown-item command="a" >我的</el-dropdown-item>
+                <el-dropdown-item command="b">退出</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-            <span>王小虎</span>
+            <span v-if="info.authorName">{{info.authorName}}</span>
+            <span v-else>{{info.mobile}}</span>
+            
           </div>
         </div>
         <div id="aside">
-          <el-menu :default-active="$route.path" @select="handleSelect">
+          <el-menu :default-active="$route.path" @select="handleSelect" v-if="info.authStatus==2">
               <el-menu-item index="/home/articleManagement">
                 <i class="el-icon-edit-outline"></i>
                 <span slot="title">文章管理</span>
               </el-menu-item>
               <el-menu-item  index="/home/myAssets">
                 <i class="el-icon-sold-out"></i>
-                <span slot="title">我的资产</span>
+                <span slot="title">我的收益</span>
               </el-menu-item>
             </el-menu>
         </div>
@@ -42,10 +45,12 @@ export default {
   name: 'home',
   data () {
     return {
-      name:""
+      name:"",
+      info:{}
     }
   },
   created(){
+    this.getStatus()
     
   },
   mounted(){    
@@ -62,11 +67,26 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          self.$store.commit("logout")
-          self.$router.push({
-            path: '/login',
-            query: {redirect: self.$router.currentRoute.fullPath}  
-          }) 
+          self.axios.get(api.logout).then(function (res) {
+            if(res.data.code==200){
+              self.$store.commit("logout");
+              self.$router.push({
+                path: '/login'
+                // query: {redirect: self.$router.currentRoute.fullPath}  
+              }) 
+            }else{
+              self.$message({
+                    message:res.data.message,
+                    type: 'warning'
+              });   
+              
+            }
+                
+          }).catch(function (error) {
+          　　
+          });
+
+          
         }).catch(() => {
                  
         });       
@@ -78,7 +98,8 @@ export default {
           self.logout()
         }else{
           self.$router.push({
-            name:'personalAuth'
+            name:'personalInfo',
+            
           }) 
 
         }
@@ -88,58 +109,67 @@ export default {
         self.$router.push({
             path:select
           })        
-      }
+      },
+      getStatus:function(){
+      var self=this;  
+      const loading=self.$loading({
+          lock: true,
+          text: '请求中……',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });      
+      self.axios.get(api.getUserStatus).then(function (res) {
+        if(res.data.code==200){
+          loading.close();
+          self.info=res.data.result;
+          if(self.info.authStatus!==2&&self.$router.currentRoute.fullPath=='/home/myAssets'){
+            self.$router.push({
+                name:'personalInfo',
+                
+              }) 
+
+          }
+          
+        }else{
+          loading.close();
+          self.$message({
+                message:res.data.message,
+                type: 'warning'
+          });   
+          
+        }
+            
+      }).catch(function (error) {
+      　　
+      });
+    }
+ 
   }
 }
 </script>
 
 <style lang="scss">
-#header{
-  height:60px;
-  line-height:60px;
-  position:relative;
-  padding:0;
-  background-color: #B3C0D1;
-  color: #333;
-  text-align: center;
-  .logoDiv{
-    width:200px;
-    background:#409EFF;
-    color:#fff;
-    float:left;
-    text-align:center;
-    height:60px;
-    line-height:60px;
-  }
-  .titHead{
-    float:left;
-    padding-left:30px;
-    font-size:18px;
-    height:60px;
-    line-height:60px;
-  }
-}
 #aside{
   display: block;
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 60px;
   bottom: 0;
-  width:200px;
+  width:160px;
   background-color: #B3C0D1;
   .el-menu-item.is-active{
      background:#ecf5ff;
   }
 }
 #main{
-  position: absolute;
-  left: 200px;
-  right: 0;
-  top: 60px;
-  bottom: 0;
-  overflow-y: scroll;
+  // position: absolute;
+  margin-left:160px;
+  padding-top:60px;
+  overflow-y:auto;
   transition: left .3s ease-in-out;
   background: #f0f0f0;
+  min-height:100%;
+  box-sizing:border-box;
   .content{
     padding:20px;
     .el-breadcrumb{

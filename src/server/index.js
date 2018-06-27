@@ -14,7 +14,7 @@ axios.defaults.timeout = 50000;
 axios.interceptors.request.use(
     config => {
         if (store.state.token) {
-            config.headers.Authorization = `token ${store.state.token}`;//${}es6语法，在字符串中使用变量。
+            config.headers.provider_sid = `${store.state.token}`;//${}es6语法，在字符串中使用变量。
         }
         return config;
     },
@@ -25,17 +25,26 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
     response => {
+        if(response.data.code==202){
+            store.commit("logout");
+            router.replace({
+                name: 'login'
+                // query: {redirect: router.currentRoute.fullPath}                       
+            })
+
+        }
         return response;
     },
     error => {
         if (error.response) {
-            switch (error.response.status) {
-                case 401:
+           
+            switch (error.response.code) {
+                case 202:
                     // 401 清除token信息并跳转到登录页面
                     store.commit("logout");
                     router.replace({
-                        path: 'login',
-                        query: {redirect: router.currentRoute.fullPath}                       
+                        path: 'login'
+                        // query: {redirect: router.currentRoute.fullPath}                       
                     })
             }
         }

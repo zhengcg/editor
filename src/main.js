@@ -9,11 +9,13 @@ import axios from './server'
 import 'element-ui/lib/theme-chalk/index.css';
 import './assets/css/style.scss';//全局修改mint-UI样式 
 import 'babel-polyfill';
-
+import '../static/ue/ueditor.config.js';
+import '../static/ue/ueditor.all.js';
+import '../static/ue/lang/zh-cn/zh-cn.js';
+import '../static/ue/ueditor.parse.min.js';
 Vue.prototype.axios = axios;
 Vue.config.productionTip = false
 Vue.use(ElementUI);
-
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

@@ -84,7 +84,12 @@ require('echarts/lib/component/title')
                loading.close();
                self.info=res.data.result; 
                var list=res.data.result.list;
-               var date=res.data.result.dateList;
+               var date=[];
+               for(let i=0;i<res.data.result.dateList.length;i++){
+                  date.push(res.data.result.dateList[i].slice(5))
+
+               }
+               
                var value=res.data.result.ipeList;
               
                 var option={

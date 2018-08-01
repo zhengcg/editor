@@ -87,7 +87,7 @@
       title="确认发布文章？"
       :visible.sync="isPublish"
       width="30%">
-      <div>成功发布原创文章将获得资产奖励，已发布的文章将不可被修改。一旦确认发布文章，则意味着该文章和您的相关数据将会在IPTrade链上进行记录。文章发布后您将获得专属区块链证书。</div>
+      <div>成功发布原创文章将获得资产奖励，已发布的文章将不可被修改。一旦确认发布文章，则意味着该文章和您的相关数据将会在IPXE链上进行记录。文章发布后您将获得专属区块链证书。</div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="isPublish = false">取 消</el-button>
         <el-button type="primary" @click="publishFn">确 定</el-button>
@@ -115,7 +115,7 @@ import api from '../api/api';
    
   },
   created(){
-    
+
 
   },
   mounted() {

@@ -82,7 +82,7 @@ export default {
       },
     // 手机号验证
      isPoneAvailable: function (pone) {  
-       var myreg = /^[1][3,4,5,7,8][0-9]{9}$/;  
+       var myreg = /^[1][3,4,5,6,7,8][0-9]{9}$/;  
        if (!myreg.test(pone)) {  
          return false;  
        } else {  
@@ -105,8 +105,9 @@ export default {
       // }).catch(function (error) {
       // 　　
       // });
-      self.codeUrl='http://smart.mingmai.com/pro/validateCode?method=register&deviceId='+self.sjs
+      var url=window.location.href.split("#")[0];
 
+      self.codeUrl=url+'pro/validateCode?method=register&deviceId='+self.sjs
     }, 
      sendCode:function(){
       var self=this;

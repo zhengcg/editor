@@ -18,17 +18,17 @@
                 </li>
                 <li>
                   <span>本文章总收益</span>
-                  <em  style="font-style: normal;width: 150px;">+{{(stat.createIpe+stat.likesIpe+stat.commentsIpe-stat.rewordIpe).toFixed(5)}}个IPE</em>
+                  <em  style="font-style: normal;width: 150px;">{{(stat.createIpe+stat.likesIpe+stat.commentsIpe-stat.rewordIpe).toFixed(5)}}个IPE</em>
                 </li>
                 <li>
                   <span>赞</span>
                   <em  style="font-style: normal">{{stat.likes}}</em>
-                  <em style="font-style: normal">+{{stat.likesIpe}}个IPE</em>
+                  <em style="font-style: normal">{{stat.likesIpe}}个IPE</em>
                 </li>
                 <li>
                   <span>评</span>
                   <em style="font-style: normal">{{stat.comments}}</em>
-                  <em style="font-style: normal">+{{stat.commentsIpe}}个IPE</em>
+                  <em style="font-style: normal">{{stat.commentsIpe}}个IPE</em>
                 </li>
                 <li>
                   <span>分享评论</span>
@@ -47,7 +47,7 @@
               <div class="title">
                 <span>精华评论{{info.commentList.length}}/7</span>
               </div>
-              <div class="listBox" v-for="item in info.commentList" v-if="info.commentList.length>0">
+              <a href="javascript:;" @click="checkComment(item)" class="listBox iconMore" v-for="item in info.commentList" v-if="info.commentList.length>0">
                 <el-row :gutter="10">
                   <el-col :span="4">
                     <div class="imgBox">
@@ -56,11 +56,11 @@
                   </el-col>
                   <el-col :span="20">
                     <h3><em style="font-style: normal">{{item.nickName}}</em><em style="margin-left:15px;font-style: normal" v-if="item.isAuther">作者</em></h3>
-                    <a href="javascript:;"  @click="checkComment(item)"><span>{{item.createDate}}</span>&gt;&gt;详情</a>
+                    <span>{{item.createDate}}</span>
                   </el-col>
                  
                 </el-row>
-              </div>
+              </a>
             </div>
             
             
@@ -76,15 +76,15 @@
               </div>
               <div class="article" v-html="info.article.content"></div>
               <div class="smBox">
-                <span>声明：本文数据已被IPTrade区块链记录，不可篡改！</span>
-                <p>阅读{{stat.views}}</p>
+                <span>声明：本作品已被IPXE区块链记录，不可篡改！</span>
+                <p style="float:right;margin-top: 0;">阅读{{stat.views}}</p>
               </div>
               <div class="commentDiv">评论</div>
               <div class="botBox">
                 <span style="padding-left: 20px">优质评论最高可获得0.5个水晶</span>
                 
                 <a href="javascript:;" >上链查询</a>
-                <span style="float:right"><i class="el-icon-star-on"></i>{{stat.likes}}</span>
+                <span style="float:right"><i class="icon-heart"></i><em style="vertical-align: middle;font-style: normal;">{{stat.likes}}</em></span>
               </div>
               
             </div>
@@ -155,7 +155,7 @@
       width="30%"
       :before-close="handleClose">
       <div class="commentDiv" v-if="commentDetail.id">
-        <div class="listBox">
+        <div class="listBox" style="border-bottom: none;">
                 <el-row :gutter="10">
                   <el-col :span="4">
                     <div class="imgBox">
@@ -164,7 +164,7 @@
                   </el-col>
                   <el-col :span="14">
                     <h3><em  style="font-style: normal">{{commentDetail.nickName}}</em><em style="margin-left:15px;font-style: normal" v-if="commentDetail.isAuther">作者</em></h3>
-                    <a href="javascript:;" style="text-align: left">{{commentDetail.createDate}}</a>
+                    <span>{{commentDetail.createDate}}</span>
                     <p>{{commentDetail.commentRepl}}</p>
                   </el-col>
                   <el-col :span="6">
@@ -199,7 +199,9 @@ import api from '../api/api';
         page:1,
         count:0,
         comments:[],
-        more:"查看更多"
+        more:"查看更多",
+        isOutLimit:0,
+        topCounts:0
     
    }
   },
@@ -254,7 +256,10 @@ import api from '../api/api';
                       type: 'success'
                     }); 
                     self.getDetail() 
-                    self.dialogVisible=false;                             
+                    self.dialogVisible=false;  
+                    self.comments=[];
+                    self.page=1;
+                    self.getList();                              
               }else{
                 loading.close();
                 self.$message({
@@ -275,8 +280,14 @@ import api from '../api/api';
     },
     jFn:function(id){
       var self=this;
-      var i=self.info.commentList.length+1
-       this.$confirm('这是您设置的第'+i+'/7个精华评论，您将付出0.1个IPE，生态将为您配置0.4个IPE,一共0.5个IPE奖励优质评论者！', '设为精华', {
+      var i=self.topCounts+1;
+      var text='这是您设置的第'+i+'/7个精华评论，您将付出0.1个IPE，生态将为您配置0.4个IPE,一共0.5个IPE奖励优质评论者！'
+      if(self.isOutLimit==1){
+        text='这是您设置的第'+i+'次精华评论，您将付出0.5个IPE奖励优秀评论者！'
+      }else{
+        text='这是您设置的第'+i+'/7个精华评论，您将付出0.1个IPE，生态将为您配置0.4个IPE,一共0.5个IPE奖励优质评论者！'
+      }
+       this.$confirm(text, '设为精华', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -494,6 +505,8 @@ import api from '../api/api';
               if(res.data.code==200){
                loading.close();
                self.count=res.data.result.count;
+               self.isOutLimit=res.data.result.isOutLimit;
+               self.topCounts=res.data.result.topCounts;
                self.comments=self.comments.concat(res.data.result.list);
                if(self.comments.length<self.count){
                   self.more="查看更多";
@@ -526,12 +539,24 @@ import api from '../api/api';
     margin-bottom:20px;
     border-radius:3px;
   }
+  .listBox.iconMore{
+    background:url("../assets/icon/icon02.png") no-repeat right center;
+    background-size:16px 16px;
+    display:block;
+    text-decoration:none;
+
+
+  }
      .listBox{
       color:#666;
       font-size:12px;
       padding:10px 0;
+      border-bottom:1px solid #ebeef5;
       .imgBox{
-        over-flow:hidden;
+        overflow:hidden;
+        border-radius:50%;
+        width:45px;
+        height:45px;
         img{
           width:100%;
         }
@@ -551,14 +576,17 @@ import api from '../api/api';
         font-size:12px;
         color:#333;
         text-align:right;
-        // margin-bottom:10px;
-        height:32px;
-        line-height:32px;
+        height:28px;
+        line-height:28px;
         em{
           float:left;
           display:block;
-          line-height:32px;
+          line-height:28px;
+          text-align:left;
         }
+      }
+      p{
+        margin-top:10px;
       }
     }
   .commentList{
@@ -582,6 +610,7 @@ import api from '../api/api';
   .yDetail{
     height:500px;
     overflow:auto!important;
+    
     .header{
       padding:20px;
       color:#333;
@@ -634,6 +663,7 @@ import api from '../api/api';
     }
     .article{
       padding:0 20px;
+      margin-top:20px;
       img{
         max-width:100%
       }

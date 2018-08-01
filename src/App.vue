@@ -35,6 +35,7 @@
 <style  lang="scss">
 html,body{
     height:100%;
+
 }
 .clearfix:after{content: '';display: block;height: 0;clear: both;-ms-zoom: 1;}
 #app,#home{
@@ -43,6 +44,7 @@ html,body{
 *{
     margin:0;
     padding:0;
+    word-break: break-all;
 }
 
 .el-upload-list{
@@ -90,6 +92,14 @@ pre.ql-syntax {
 .ql-align-justify {
     text-align: justify;
 }
+.icon-heart{
+      display:inline-block;
+      width:16px;
+      height:16px;
+      background:url("assets/icon/icon01.png") no-repeat center;
+      background-size:contain;
+      vertical-align:middle;
+    }
 #header{
   height:60px;
   line-height:60px;
@@ -127,6 +137,7 @@ pre.ql-syntax {
     line-height:60px;
   }
 }
+
 .login{
   height:100%;
   background:#B3C0D1;
@@ -157,7 +168,9 @@ pre.ql-syntax {
     .el-select .el-input--suffix{width:100px;}
   }
 
+
 }
+
 // img{
 //   opacity: 1!important;
 // }

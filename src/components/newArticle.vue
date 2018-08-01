@@ -9,10 +9,10 @@
           <div class="box">
             <label>标题</label>
             <el-input
-              placeholder="不多于28个汉字字符"
+              placeholder="最多56个文字"
               v-model="title"
               clearable 
-              maxlength="28">
+              maxlength="56">
             </el-input>
           </div>
           <div class="box">
@@ -25,7 +25,7 @@
                 :value="item.label">
               </el-option>
             </el-select>
-          </div>
+          </div> 
           <div class="box">
             <label>内容</label>
             <el-upload class="selfImg"  :action="fileup" name="File"  :show-file-list="false" :on-success="insertImg" >
@@ -60,20 +60,19 @@
             <div class="yBox yDetail">
               <div class="header">{{title}}</div>
               <div class="info">
-                <!-- <span>{{info.nickName}}</span>
-                <span>{{info.addTime}}</span> -->
+                <span>{{nickName}}</span>
               </div>
               <div class="article" v-html="content"></div>
               <div class="smBox">
-                <span>声明：本文数据已被IPTrade区块链记录，不可篡改！</span>
-                <p>阅读0000</p>
+                <span>声明：本作品已被IPXE区块链记录，不可篡改！</span>
+                <p style="float:right;margin-top: 0;">阅读0000</p>
               </div>
               <div class="commentDiv">评论</div>
               <div class="botBox">
                 <span style="padding-left: 20px">优质评论最高可获得0.5个水晶</span>
                 
                 <a href="javascript:;" >上链查询</a>
-                <span style="float:right"><i class="el-icon-star-on"></i>00</span>
+                <span style="float:right"><i class="icon-heart"></i><em style="vertical-align: middle;font-style: normal;">00</em></span>
               </div>
               
             </div>
@@ -106,27 +105,30 @@ import UE from './ue.vue';
     fileup:api.fileup,
     imgType:{type:3},
     title:'',
-     options: [{
-          value: '1',
-          label: '科技'
-        }, {
-          value: '2',
-          label: '生活'
-        }, {
-          value: '3',
-          label: '学术'
-        }, {
-          value: '4',
-          label: '时尚'
-        }, {
-          value: '5',
-          label: 'IT'
-        }],
+     options: [
+     // {
+     //      value: '1',
+     //      label: '科技'
+     //    }, {
+     //      value: '2',
+     //      label: '生活'
+     //    }, {
+     //      value: '3',
+     //      label: '学术'
+     //    }, {
+     //      value: '4',
+     //      label: '时尚'
+     //    }, {
+     //      value: '5',
+     //      label: 'IT'
+     //    }
+        ],
         labels: [],
         uploadUrl:api.upload,
         content: '请开始你的创作',
         img:'',
-        isSave:false
+        isSave:false,
+        nickName:""
       
    }
   },
@@ -139,6 +141,22 @@ import UE from './ue.vue';
   },
   created(){
     this.id=this.$route.query.id;
+      var self=this;        
+      self.axios.get(api.getUserStatus).then(function (res) {
+        if(res.data.code==200){
+          self.nickName=res.data.result.authorName;
+          
+        }else{
+          self.$message({
+                message:res.data.message,
+                type: 'warning'
+          });   
+          
+        }
+            
+      }).catch(function (error) {
+      　　
+      });
     
   },
   mounted() {
@@ -223,6 +241,7 @@ import UE from './ue.vue';
                self.labels=res.data.result.tag.split(",");
                self.content=res.data.result.content;
                self.img=res.data.result.coverImg;
+               self.nickName=res.data.result.nickName;
                self.$refs.ue.editor.setContent(self.content);
                                
               }else{
@@ -311,7 +330,8 @@ import UE from './ue.vue';
           message: '请输入标题',
           type: 'warning'
         });
-      }else if(self.labels.length==0){
+      }
+      else if(self.labels.length==0){
         flag=false;
         self.$message({
           message: '请选择文章标签',
@@ -332,7 +352,8 @@ import UE from './ue.vue';
           type: 'warning'
         });
 
-      }else if(self.content==""){
+      }
+      else if(self.content==""){
         flag=false;
         self.$message({
           message: '请写文章',
@@ -484,6 +505,7 @@ import UE from './ue.vue';
     }
     .article{
       padding:0 20px;
+      margin-top:20px;
       img{
         max-width:100%
       }

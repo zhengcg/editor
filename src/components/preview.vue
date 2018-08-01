@@ -6,7 +6,7 @@
     </el-breadcrumb>
 
     <el-row :gutter="20">
-      <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
+      <el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="8">
         <div class="yBox yList">
           <div class="box">
             <div class="imgBox"><img :src="info.coverImg"/></div>
@@ -15,7 +15,7 @@
           </div>
         </div>
       </el-col>
-      <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
+      <el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="8">
         <div class="yBox yDetail">
           <div class="header">{{info.title}}</div>
           <div class="info">
@@ -24,15 +24,15 @@
           </div>
           <div class="article" v-html="info.content"></div>
           <div class="smBox">
-            <span>声明：本文数据已被IPTrade区块链记录，不可篡改！</span>
-            <p>阅读0000</p>
+            <span>声明：本作品已被IPXE区块链记录，不可篡改！</span>
+            <p style="float: right;margin-top:0">阅读0000</p>
           </div>
           <div class="commentDiv">评论</div>
           <div class="botBox">
             <span style="padding-left: 20px">优质评论最高可获得0.5个水晶</span>
             
             <a href="javascript:;" >上链查询</a>
-            <span style="float:right"><i class="el-icon-star-on"></i>00</span>
+            <span style="float:right"><i class="icon-heart"></i><em style="vertical-align: middle;font-style: normal">00</em></span>
           </div>
           
         </div>
@@ -184,6 +184,7 @@ import api from '../api/api';
     }
     .article{
       padding:0 20px;
+      margin-top:20px;
       img{
         max-width:100%
       }

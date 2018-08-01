@@ -86,7 +86,7 @@
                 <el-input v-model="info.idNumber"></el-input>
               </el-form-item>
               <el-form-item label="署名登记">
-                <el-input v-model="info.authorName"  maxlength="32" minlength="4"></el-input>
+                <el-input v-model="info.authorName"  maxlength="16" minlength="2"></el-input>
                 <p style="font-size:12px;color:#999;">（署名将显示在文章顶部，请登记您的微信公众号、或真实姓名、或其他署名）</p>
               </el-form-item>
             </el-form>
@@ -224,7 +224,7 @@ import api from '../api/api';
 
       }else{
         self.$message({
-                      message:"请填写4-32个字符的用户署名",
+                      message:"请填写2-16个字符的用户署名",
                       type: 'warning'
                     });     
 
@@ -373,10 +373,10 @@ import api from '../api/api';
             type: 'warning'
           });
 
-        }else if(self.nickName.length<4){
+        }else if(self.nickName.length<2){
           flag=false;
           self.$message({
-            message: '署名长度为4-32个字符',
+            message: '署名长度为2-16个字符',
             type: 'warning'
           });
 
@@ -401,7 +401,7 @@ import api from '../api/api';
         }else if(self.nickName.length<2){
           flag=false;
           self.$message({
-            message: '署名长度为4-32个字符',
+            message: '署名长度为2-16个字符',
             type: 'warning'
           });
 
